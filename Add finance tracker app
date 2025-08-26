@@ -1,0 +1,1086 @@
+<div class="section">
+            <h3>📋 Recent Transactions</h3<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Finance Tracker</title>
+    
+    <!-- PWA Meta Tags for iPhone -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Finance Tracker">
+    <meta name="theme-color" content="#667eea">
+    
+    <!-- App Icons for iPhone -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23667eea'/><text y='55' x='50' text-anchor='middle' font-size='40' fill='white'>💰</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23667eea'/><text y='55' x='50' text-anchor='middle' font-size='40' fill='white'>💰</text></svg>">
+    
+    <!-- Manifest for PWA -->
+    <link rel="manifest" href="data:application/json,{
+        'name': 'Finance Tracker',
+        'short_name': 'Finance',
+        'description': 'Personal Finance and Expense Tracker',
+        'start_url': '/',
+        'display': 'standalone',
+        'background_color': '#667eea',
+        'theme_color': '#667eea',
+        'icons': [
+            {
+                'src': 'data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"%23667eea\"/><text y=\"55\" x=\"50\" text-anchor=\"middle\" font-size=\"40\" fill=\"white\">💰</text></svg>',
+                'sizes': '192x192',
+                'type': 'image/svg+xml'
+            }
+        ]
+    }">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            padding-top: max(env(safe-area-inset-top), 20px);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px 25px 0 0;
+            min-height: calc(100vh - 40px);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+            padding: 20px 15px 80px;
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: -20px -15px 25px;
+            border-radius: 25px 25px 0 0;
+            color: white;
+        }
+
+        .app-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .app-subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f0f0f0;
+        }
+
+        .card-icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .card h3 {
+            font-size: 0.75em;
+            margin-bottom: 8px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 1.4em;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+
+        .card-subtitle {
+            font-size: 0.7em;
+            color: #888;
+        }
+
+        .balance-card .card-value { color: #27ae60; }
+        .weekly-card .card-value { color: #3498db; }
+        .savings-card .card-value { color: #f39c12; }
+        .daily-card .card-value { color: #9b59b6; }
+
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .section h3 {
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 4px;
+            font-size: 0.8em;
+        }
+
+        input, select {
+            padding: 12px 8px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #fafafa;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            transform: scale(1.02);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px 2px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            box-shadow: none;
+        }
+
+        .daily-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .day-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 12px 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .day-name {
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 0.8em;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .day-input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .day-total {
+            font-weight: 700;
+            color: #e74c3c;
+            font-size: 0.8em;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .expense-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border-left: 4px solid #e67e22;
+        }
+
+        .expense-income {
+            border-left-color: #27ae60;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .alert-box {
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            color: white;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #48cae4, #0077b6);
+            color: white;
+        }
+
+        .fixed-expenses {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .fixed-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .fixed-item.pending {
+            border-left-color: #e67e22;
+            background: #fdf6e3;
+        }
+
+        .fixed-item.paid {
+            border-left-color: #27ae60;
+            background: #eafaf1;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .info-text {
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: linear-gradient(135deg, #e3f2fd, #f3e5f5);
+            border-radius: 10px;
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        /* iOS specific improvements */
+        @supports (-webkit-appearance: none) {
+            .btn {
+                -webkit-appearance: none;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+            }
+        }
+
+        /* iPhone 14+ specific */
+        @media (min-width: 390px) and (max-width: 430px) {
+            .app-container {
+                border-radius: 30px 30px 0 0;
+            }
+            
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
+
+        /* Landscape mode for iPhone */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .app-container {
+                border-radius: 0;
+                min-height: 100vh;
+                padding-bottom: 20px;
+            }
+            
+            .daily-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Scrollbar styling for iOS */
+        ::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 3px;
+        }
+
+        /* Animation for notifications */
+        @keyframes slideInFromRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification {
+            animation: slideInFromRight 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <h1 class="app-title">💰 Finance Tracker</h1>
+            <p class="app-subtitle">Service Engineer Money Manager</p>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card balance-card">
+                <div class="card-icon">💰</div>
+                <h3>Current Balance</h3>
+                <div class="card-value" id="currentBalance">₹1,996</div>
+                <div class="card-subtitle">Live balance</div>
+            </div>
+            
+            <div class="card weekly-card">
+                <div class="card-icon">📅</div>
+                <h3>Weekly Income</h3>
+                <div class="card-value">₹16K</div>
+                <div class="card-subtitle">Mon + Fri</div>
+            </div>
+            
+            <div class="card savings-card">
+                <div class="card-icon">🎯</div>
+                <h3>Savings Goal</h3>
+                <div class="card-value">₹10K</div>
+                <div class="card-subtitle">Weekly target</div>
+            </div>
+            
+            <div class="card daily-card">
+                <div class="card-icon">📊</div>
+                <h3>Daily Budget</h3>
+                <div class="card-value" id="dailyBudget">₹400</div>
+                <div class="card-subtitle">Until Friday</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🏠 Monthly Fixed Expenses</h3>
+            <div class="fixed-expenses">
+                <div class="fixed-item" id="monthlyPayment">
+                    <span><strong>Monthly Payment</strong></span>
+                    <strong>₹20K</strong>
+                </div>
+                <div class="fixed-item pending" id="phoneEmi">
+                    <span><strong>Phone EMI</strong></span>
+                    <strong>₹6K</strong>
+                </div>
+                <div class="fixed-item pending" id="autoBhaiya">
+                    <span><strong>Auto Bhaiya</strong></span>
+                    <strong>₹10K</strong>
+                </div>
+                <div class="fixed-item" id="roomRent">
+                    <span><strong>Room Rent</strong></span>
+                    <strong>₹3.5K</strong>
+                </div>
+            </div>
+            <div class="alert-box alert-danger">
+                <strong>Monthly Gap:</strong> Need ₹10.5K extra from weekly advances
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>💸 Quick Transaction</h3>
+            <div class="input-row">
+                <div class="input-group">
+                    <label>Amount</label>
+                    <input type="number" id="transactionAmount" placeholder="₹ Amount">
+                </div>
+                <div class="input-group">
+                    <label>Type</label>
+                    <select id="transactionType">
+                        <option value="income">💰 Money In</option>
+                        <option value="family">👨‍👩‍👧‍👦 Family</option>
+                        <option value="medical">🏥 Medical</option>
+                        <option value="emergency">🚨 Emergency</option>
+                        <option value="other">📦 Other</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Note</label>
+                    <input type="text" id="transactionDescription" placeholder="Optional">
+                </div>
+            </div>
+            <button class="btn" onclick="addTransaction()" style="width: 100%;">Add Transaction</button>
+        </div>
+
+        <div class="section">
+            <h3>📅 Daily Expenses</h3>
+            <p style="color: #666; margin-bottom: 15px; font-size: 0.9em;">
+                <strong>Travel:</strong> Train/Bus/Auto • <strong>Food:</strong> Meals • <strong>Other:</strong> Tea/Medicine
+            </p>
+            <div class="daily-grid">
+                <div class="day-box">
+                    <div class="day-name">Monday</div>
+                    <input type="number" class="day-input" placeholder="Travel" id="mon-travel" oninput="calculateDaily('mon')">
+                    <input type="number" class="day-input" placeholder="Food" id="mon-food" oninput="calculateDaily('mon')">
+                    <input type="number" class="day-input" placeholder="Other" id="mon-other" oninput="calculateDaily('mon')">
+                    <div class="day-total" id="mon-total">₹0</div>
+                </div>
+                
+                <div class="day-box">
+                    <div class="day-name">Tuesday</div>
+                    <input type="number" class="day-input" placeholder="Travel" id="tue-travel" oninput="calculateDaily('tue')">
+                    <input type="number" class="day-input" placeholder="Food" id="tue-food" oninput="calculateDaily('tue')">
+                    <input type="number" class="day-input" placeholder="Other" id="tue-other" oninput="calculateDaily('tue')">
+                    <div class="day-total" id="tue-total">₹0</div>
+                </div>
+                
+                <div class="day-box">
+                    <div class="day-name">Wednesday</div>
+                    <input type="number" class="day-input" placeholder="Travel" id="wed-travel" oninput="calculateDaily('wed')">
+                    <input type="number" class="day-input" placeholder="Food" id="wed-food" oninput="calculateDaily('wed')">
+                    <input type="number" class="day-input" placeholder="Other" id="wed-other" oninput="calculateDaily('wed')">
+                    <div class="day-total" id="wed-total">₹0</div>
+                </div>
+                
+                <div class="day-box">
+                    <div class="day-name">Thursday</div>
+                    <input type="number" class="day-input" placeholder="Travel" id="thu-travel" oninput="calculateDaily('thu')">
+                    <input type="number" class="day-input" placeholder="Food" id="thu-food" oninput="calculateDaily('thu')">
+                    <input type="number" class="day-input" placeholder="Other" id="thu-other" oninput="calculateDaily('thu')">
+                    <div class="day-total" id="thu-total">₹0</div>
+                </div>
+                
+                <div class="day-box">
+                    <div class="day-name">Friday</div>
+                    <input type="number" class="day-input" placeholder="Travel" id="fri-travel" oninput="calculateDaily('fri')">
+                    <input type="number" class="day-input" placeholder="Food" id="fri-food" oninput="calculateDaily('fri')">
+                    <input type="number" class="day-input" placeholder="Other" id="fri-other" oninput="calculateDaily('fri')">
+                    <div class="day-total" id="fri-total">₹0</div>
+                </div>
+                
+                <div class="day-box">
+                    <div class="day-name">Saturday</div>
+                    <input type="number" class="day-input" placeholder="Travel" id="sat-travel" oninput="calculateDaily('sat')">
+                    <input type="number" class="day-input" placeholder="Food" id="sat-food" oninput="calculateDaily('sat')">
+                    <input type="number" class="day-input" placeholder="Other" id="sat-other" oninput="calculateDaily('sat')">
+                    <div class="day-total" id="sat-total">₹0</div>
+                </div>
+                
+                <div class="day-box">
+                    <div class="day-name">Sunday</div>
+                    <input type="number" class="day-input" placeholder="Travel" id="sun-travel" oninput="calculateDaily('sun')">
+                    <input type="number" class="day-input" placeholder="Food" id="sun-food" oninput="calculateDaily('sun')">
+                    <input type="number" class="day-input" placeholder="Other" id="sun-other" oninput="calculateDaily('sun')">
+                    <div class="day-total" id="sun-total">₹0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📋 Recent Transactions</h3>
+            <div class="expense-list" id="transactionList">
+                <p style="color: #999; font-style: italic; text-align: center; padding: 20px;">No transactions yet...</p>
+            </div>
+            <div style="text-align: center; padding: 12px; background: #f8f9fa; border-radius: 8px; margin-top: 12px;">
+                <strong>Weekly Total: <span id="weeklySpent" style="color: #e74c3c;">₹0</span></strong>
+            </div>
+        </div>
+
+        <div id="alertSection"></div>
+
+        <div class="button-grid">
+            <button class="btn" onclick="payFixedExpense('phoneEmi', 6000)">📱 Pay EMI</button>
+            <button class="btn" onclick="payFixedExpense('autoBhaiya', 10000)">🛺 Pay Auto</button>
+            <button class="btn" onclick="exportData()">📤 Backup</button>
+            <button class="btn" onclick="clearAllData()">🗑️ Reset</button>
+        </div>
+        
+        <div class="info-text">
+            <div style="margin-bottom: 8px;"><strong>💾 Auto-Save Enabled</strong></div>
+            <div>All data saves automatically in your iPhone. Add to home screen for app-like experience!</div>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker -->
+    <script>
+        // Register service worker for PWA functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('data:application/javascript,const CACHE_NAME="finance-tracker-v1";const urlsToCache=["/"];self.addEventListener("install",function(event){event.waitUntil(caches.open(CACHE_NAME).then(function(cache){return cache.addAll(urlsToCache)}))});self.addEventListener("fetch",function(event){event.respondWith(caches.match(event.request).then(function(response){return response||fetch(event.request)}))});')
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful');
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+    </script>
+    </div>
+
+    <script>
+        let currentBalance = 1996.70;
+        let transactions = [];
+        let phoneEmiPaid = false;
+        let autoBhaiyaPaid = false;
+
+        // Auto-save function
+        function autoSave() {
+            const data = {
+                currentBalance: currentBalance,
+                transactions: transactions,
+                phoneEmiPaid: phoneEmiPaid,
+                autoBhaiyaPaid: autoBhaiyaPaid,
+                dailyExpenses: {},
+                lastSaved: new Date().toISOString()
+            };
+
+            // Save daily expenses
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            days.forEach(day => {
+                const travel = document.getElementById(day + '-travel').value || '';
+                const food = document.getElementById(day + '-food').value || '';
+                const other = document.getElementById(day + '-other').value || '';
+                data.dailyExpenses[day] = { travel, food, other };
+            });
+
+            // Save to browser's local storage
+            try {
+                const jsonData = JSON.stringify(data);
+                localStorage.setItem('financeTrackerData', jsonData);
+                console.log('Data auto-saved successfully');
+            } catch (error) {
+                console.error('Error auto-saving data:', error);
+            }
+        }
+
+        // Auto-load function
+        function autoLoad() {
+            try {
+                const savedData = localStorage.getItem('financeTrackerData');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    
+                    // Load all data
+                    currentBalance = data.currentBalance || 1996.70;
+                    transactions = data.transactions || [];
+                    phoneEmiPaid = data.phoneEmiPaid || false;
+                    autoBhaiyaPaid = data.autoBhaiyaPaid || false;
+                    
+                    // Load daily expenses
+                    if (data.dailyExpenses) {
+                        const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+                        days.forEach(day => {
+                            if (data.dailyExpenses[day]) {
+                                document.getElementById(day + '-travel').value = data.dailyExpenses[day].travel || '';
+                                document.getElementById(day + '-food').value = data.dailyExpenses[day].food || '';
+                                document.getElementById(day + '-other').value = data.dailyExpenses[day].other || '';
+                                calculateDaily(day);
+                            }
+                        });
+                    }
+                    
+                    // Update paid status
+                    if (phoneEmiPaid) {
+                        document.getElementById('phoneEmi').classList.add('paid');
+                        document.getElementById('phoneEmi').classList.remove('pending');
+                        // Disable button
+                        const phoneBtn = document.querySelector('button[onclick*="phoneEmi"]');
+                        if (phoneBtn) {
+                            phoneBtn.disabled = true;
+                            phoneBtn.textContent = '✅ Already Paid';
+                        }
+                    }
+                    if (autoBhaiyaPaid) {
+                        document.getElementById('autoBhaiya').classList.add('paid');
+                        document.getElementById('autoBhaiya').classList.remove('pending');
+                        // Disable button
+                        const autoBtn = document.querySelector('button[onclick*="autoBhaiya"]');
+                        if (autoBtn) {
+                            autoBtn.disabled = true;
+                            autoBtn.textContent = '✅ Already Paid';
+                        }
+                    }
+                    
+                    console.log('Data auto-loaded successfully. Last saved:', data.lastSaved);
+                    
+                    // Show a small notification
+                    showNotification('✅ Previous data loaded automatically', 'success');
+                } else {
+                    console.log('No saved data found. Starting fresh.');
+                    showNotification('🆕 Starting fresh - data will auto-save as you use the app', 'info');
+                }
+            } catch (error) {
+                console.error('Error loading saved data:', error);
+                showNotification('⚠️ Error loading saved data. Starting fresh.', 'warning');
+            }
+        }
+
+        // Show notification function (optimized for iPhone)
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: max(env(safe-area-inset-top), 20px);
+                right: 15px;
+                left: 15px;
+                padding: 15px 20px;
+                border-radius: 12px;
+                color: white;
+                font-weight: 600;
+                z-index: 1000;
+                text-align: center;
+                font-size: 0.9em;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                backdrop-filter: blur(10px);
+            `;
+            
+            // Set background based on type
+            if (type === 'success') {
+                notification.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            } else if (type === 'warning') {
+                notification.style.background = 'linear-gradient(135deg, #e67e22, #f39c12)';
+            } else {
+                notification.style.background = 'linear-gradient(135deg, #3498db, #2980b9)';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Add haptic feedback for iPhone
+            if (navigator.vibrate) {
+                navigator.vibrate(100);
+            }
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateY(-100px)';
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }px;
+                border-radius: 5px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            // Set background color based on type
+            if (type === 'success') {
+                notification.style.backgroundColor = '#27ae60';
+            } else if (type === 'warning') {
+                notification.style.backgroundColor = '#e67e22';
+            } else {
+                notification.style.backgroundColor = '#3498db';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Load data when page loads
+        window.addEventListener('load', function() {
+            autoLoad();
+            updateDisplayWithDailyExpenses();
+        });
+
+        function addTransaction() {
+            const amount = parseFloat(document.getElementById('transactionAmount').value);
+            const type = document.getElementById('transactionType').value;
+            const description = document.getElementById('transactionDescription').value;
+
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount!');
+                return;
+            }
+
+            const transaction = {
+                amount: amount,
+                type: type,
+                description: description,
+                date: new Date().toLocaleDateString('en-IN'),
+                id: Date.now()
+            };
+
+            // Update balance
+            if (type === 'income') {
+                currentBalance += amount;
+            } else {
+                currentBalance -= amount;
+            }
+
+            transactions.push(transaction);
+            autoSave(); // Auto-save after adding transaction
+            updateDisplayWithDailyExpenses();
+            
+            // Clear inputs
+            document.getElementById('transactionAmount').value = '';
+            document.getElementById('transactionDescription').value = '';
+        }
+
+        function calculateDaily(day) {
+            const travel = parseFloat(document.getElementById(day + '-travel').value) || 0;
+            const food = parseFloat(document.getElementById(day + '-food').value) || 0;
+            const other = parseFloat(document.getElementById(day + '-other').value) || 0;
+            const total = travel + food + other;
+            
+            document.getElementById(day + '-total').textContent = `₹${total}`;
+            autoSave(); // Auto-save when daily expenses change
+            updateDisplayWithDailyExpenses();
+        }
+
+        function payFixedExpense(expenseId, amount) {
+            if (expenseId === 'phoneEmi' && phoneEmiPaid) {
+                alert('Phone EMI already paid!');
+                return;
+            }
+            if (expenseId === 'autoBhaiya' && autoBhaiyaPaid) {
+                alert('Auto Bhaiya already paid!');
+                return;
+            }
+
+            const transaction = {
+                amount: amount,
+                type: 'other',
+                description: expenseId === 'phoneEmi' ? 'Phone EMI Payment' : 'Auto Bhaiya Payment',
+                date: new Date().toLocaleDateString('en-IN'),
+                id: Date.now()
+            };
+
+            currentBalance -= amount;
+            transactions.push(transaction);
+
+            if (expenseId === 'phoneEmi') {
+                phoneEmiPaid = true;
+                document.getElementById('phoneEmi').classList.remove('pending');
+                document.getElementById('phoneEmi').classList.add('paid');
+            } else {
+                autoBhaiyaPaid = true;
+                document.getElementById('autoBhaiya').classList.remove('pending');
+                document.getElementById('autoBhaiya').classList.add('paid');
+            }
+
+            autoSave(); // Auto-save after payment
+            updateDisplayWithDailyExpenses();
+            event.target.disabled = true;
+            event.target.textContent = '✅ Paid';
+        }
+
+        function removeTransaction(id) {
+            const transaction = transactions.find(t => t.id === id);
+            if (transaction) {
+                // Restore balance
+                if (transaction.type === 'income') {
+                    currentBalance -= transaction.amount;
+                } else {
+                    currentBalance += transaction.amount;
+                }
+                
+                transactions = transactions.filter(t => t.id !== id);
+                autoSave(); // Auto-save after removing transaction
+                updateDisplayWithDailyExpenses();
+            }
+        }
+
+        function updateDisplayWithDailyExpenses() {
+            // Calculate daily expenses
+            const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+            let dailyTotal = 0;
+            days.forEach(day => {
+                const travel = parseFloat(document.getElementById(day + '-travel').value) || 0;
+                const food = parseFloat(document.getElementById(day + '-food').value) || 0;
+                const other = parseFloat(document.getElementById(day + '-other').value) || 0;
+                dailyTotal += travel + food + other;
+            });
+
+            // Calculate transaction expenses (excluding income)
+            const transactionExpenses = transactions.filter(t => t.type !== 'income').reduce((sum, t) => sum + t.amount, 0);
+            
+            // Calculate remaining balance after all expenses
+            const remainingBalance = currentBalance - dailyTotal;
+            
+            // Update current balance display to show remaining after daily expenses
+            document.getElementById('currentBalance').textContent = `₹${remainingBalance.toLocaleString()}`;
+            
+            // Update balance color based on remaining balance
+            const balanceElement = document.getElementById('currentBalance');
+            if (remainingBalance < 0) {
+                balanceElement.style.color = '#e74c3c';
+            } else if (remainingBalance < 500) {
+                balanceElement.style.color = '#e67e22';
+            } else if (remainingBalance < 1000) {
+                balanceElement.style.color = '#f39c12';
+            } else {
+                balanceElement.style.color = '#27ae60';
+            }
+
+            // Update totals
+            const totalSpent = transactionExpenses + dailyTotal;
+            document.getElementById('totalExpenses').textContent = `₹${transactionExpenses.toLocaleString()}`;
+            document.getElementById('weeklySpent').textContent = `₹${totalSpent.toLocaleString()}`;
+
+            // Update daily budget based on remaining balance
+            const today = new Date().getDay();
+            const daysUntilFriday = today <= 5 ? 5 - today : 5 + (7 - today);
+            const dailyBudget = daysUntilFriday > 0 ? remainingBalance / daysUntilFriday : remainingBalance;
+            document.getElementById('dailyBudget').textContent = `₹${Math.max(0, dailyBudget).toFixed(0)}`;
+
+            // Update transaction list
+            updateTransactionList();
+            
+            // Update alerts based on remaining balance
+            updateAlertsWithBalance(remainingBalance);
+        }
+
+        function updateAlertsWithBalance(remainingBalance) {
+            const alertSection = document.getElementById('alertSection');
+            let alertHtml = '';
+
+            if (remainingBalance < 0) {
+                alertHtml = '<div class="alert-box alert-danger">🚨 OVERSPENT! You are ₹' + Math.abs(remainingBalance).toLocaleString() + ' over budget!</div>';
+            } else if (remainingBalance < 200) {
+                alertHtml = '<div class="alert-box alert-danger">⚠️ CRITICAL! Only ₹' + remainingBalance.toLocaleString() + ' left until Friday!</div>';
+            } else if (remainingBalance < 500) {
+                alertHtml = '<div class="alert-box alert-warning">⚠️ WARNING! Only ₹' + remainingBalance.toLocaleString() + ' left. Be very careful!</div>';
+            } else if (remainingBalance < 1000) {
+                alertHtml = '<div class="alert-box alert-info">💡 CAUTION! ₹' + remainingBalance.toLocaleString() + ' remaining. Watch your spending.</div>';
+            }
+
+            alertSection.innerHTML = alertHtml;
+        }
+
+        function updateTransactionList() {
+            const container = document.getElementById('transactionList');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = '<p style="color: #7f8c8d; font-style: italic;">No transactions yet...</p>';
+                return;
+            }
+
+            let html = '';
+            transactions.forEach(transaction => {
+                const typeEmoji = {
+                    'income': '💰',
+                    'family': '👨‍👩‍👧‍👦',
+                    'medical': '🏥',
+                    'emergency': '🚨',
+                    'groceries': '🛒',
+                    'other': '📦'
+                };
+
+                const isIncome = transaction.type === 'income';
+                const className = isIncome ? 'expense-item expense-income' : 'expense-item';
+                
+                html += `
+                    <div class="${className}">
+                        <div>
+                            <span style="font-size: 1.2em;">${typeEmoji[transaction.type] || '📦'}</span>
+                            <strong style="color: ${isIncome ? '#27ae60' : '#e74c3c'};">
+                                ${isIncome ? '+' : '-'}₹${transaction.amount.toLocaleString()}
+                            </strong>
+                            ${transaction.description ? ` - ${transaction.description}` : ''}
+                            <small style="color: #7f8c8d; display: block;">${transaction.date}</small>
+                        </div>
+                        <button onclick="removeTransaction(${transaction.id})" 
+                                style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px;">
+                            Remove
+                        </button>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function updateAlerts() {
+            const alertSection = document.getElementById('alertSection');
+            let alertHtml = '';
+
+            if (currentBalance < 0) {
+                alertHtml = '<div class="alert-box alert-danger">🚨 NEGATIVE BALANCE! You need money immediately!</div>';
+            } else if (currentBalance < 200) {
+                alertHtml = '<div class="alert-box alert-danger">⚠️ CRITICAL! Less than ₹200 left. Emergency action needed!</div>';
+            } else if (currentBalance < 500) {
+                alertHtml = '<div class="alert-box alert-warning">⚠️ WARNING! Less than ₹500 left. Minimize all expenses!</div>';
+            } else if (currentBalance < 1000) {
+                alertHtml = '<div class="alert-box alert-info">💡 CAUTION! Less than ₹1000 left. Be careful with spending.</div>';
+            }
+
+            alertSection.innerHTML = alertHtml;
+        }
+
+        function exportData() {
+            try {
+                const savedData = localStorage.getItem('financeTrackerData');
+                if (savedData) {
+                    const blob = new Blob([savedData], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `finance_tracker_backup_${new Date().toISOString().split('T')[0]}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showNotification('📤 Data exported successfully!', 'success');
+                } else {
+                    showNotification('❌ No data to export', 'warning');
+                }
+            } catch (error) {
+                showNotification('❌ Error exporting data', 'warning');
+            }
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const data = JSON.parse(e.target.result);
+                            
+                            // Store in localStorage
+                            localStorage.setItem('financeTrackerData', JSON.stringify(data));
+                            
+                            // Reload the page to apply imported data
+                            showNotification('📥 Data imported! Refreshing page...', 'success');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1500);
+                        } catch (error) {
+                            showNotification('❌ Error importing data: Invalid file', 'warning');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            
+            input.click();
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Are you sure you want to clear ALL data? This cannot be undone!\n\nThis will delete:\n- All transactions\n- Daily expenses\n- Payment status\n- Current balance\n\nClick OK to proceed or Cancel to keep your data.')) {
+                try {
+                    localStorage.removeItem('financeTrackerData');
+                    showNotification('🗑️ All data cleared! Refreshing page...', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } catch (error) {
+                    showNotification('❌ Error clearing data', 'warning');
+                }
+            }
+        }
+
+        // Add CSS for slide-in animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
