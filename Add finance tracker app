@@ -1,507 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Tracker</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            min-height: 100vh;
-            padding: 20px 10px;
-        }
-        .container {
-            max-width: 400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.8em;
-        }
-        .dashboard {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            border-left: 4px solid #667eea;
-        }
-        .card h3 {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        .card-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-        .section {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-        }
-        .section h3 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-        .input-group {
-            margin-bottom: 10px;
-        }
-        label {
-            display: block;
-            font-weight: bold;
-            color: #444;
-            margin-bottom: 5px;
-            font-size: 0.9em;
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        input:focus, select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin: 10px 0;
-            font-size: 16px;
-        }
-        button:active {
-            transform: scale(0.98);
-        }
-        .daily-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .day-box {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .day-name {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #2c3e50;
-            font-size: 0.9em;
-        }
-        .day-input {
-            width: 100%;
-            padding: 5px;
-            margin-bottom: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 14px;
-        }
-        .day-total {
-            font-weight: bold;
-            color: #e74c3c;
-            font-size: 0.9em;
-        }
-        .expense-list {
-            max-height: 200px;
-            overflow-y: auto;
-            background: white;
-            border-radius: 8px;
-            padding: 10px;
-        }
-        .expense-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px;
-            margin-bottom: 5px;
-            background: #f8f9fa;
-            border-radius: 5px;
-            border-left: 3px solid #e67e22;
-        }
-        .alert {
-            padding: 10px;
-            border-radius: 8px;
-            margin: 10px 0;
-            text-align: center;
-            font-weight: bold;
-        }
-        .alert-danger { background: #f8d7da; color: #721c24; }
-        .alert-warning { background: #fff3cd; color: #856404; }
-        .alert-success { background: #d4edda; color: #155724; }
-        .button-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .small-text {
-            text-align: center;
-            color: #666;
-            font-size: 0.8em;
-            margin-top: 15px;
-            padding: 10px;
-            background: #f0f8ff;
-            border-radius: 8px;
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; }
+        .container { max-width: 400px; margin: 0 auto; background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        .card { background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 10px 0; text-align: center; }
+        .card-value { font-size: 1.5em; font-weight: bold; color: #2c3e50; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border: 2px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 5px; font-weight: bold; margin: 10px 0; cursor: pointer; }
+        .day-box { background: #f8f9fa; padding: 10px; border-radius: 8px; margin: 5px 0; }
+        .day-name { font-weight: bold; margin-bottom: 8px; text-align: center; }
+        .day-input { width: 100%; padding: 5px; margin: 2px 0; text-align: center; }
+        .day-total { font-weight: bold; color: #e74c3c; text-align: center; margin-top: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>💰 Finance Tracker</h1>
         
-        <div class="dashboard">
-            <div class="card">
-                <h3>Current Balance</h3>
-                <div class="card-value" id="balance">₹1,997</div>
-            </div>
-            <div class="card">
-                <h3>Daily Budget</h3>
-                <div class="card-value" id="dailyBudget">₹400</div>
-            </div>
-            <div class="card">
-                <h3>Weekly Goal</h3>
-                <div class="card-value">₹10K</div>
-            </div>
-            <div class="card">
-                <h3>Total Spent</h3>
-                <div class="card-value" id="totalSpent">₹0</div>
-            </div>
+        <div class="card">
+            <h3>Current Balance</h3>
+            <div class="card-value" id="balance">₹1,997</div>
         </div>
 
-        <div class="section">
+        <div class="card">
             <h3>💸 Quick Transaction</h3>
-            <div class="input-group">
-                <label>Amount</label>
-                <input type="number" id="amount" placeholder="Enter amount">
-            </div>
-            <div class="input-group">
-                <label>Type</label>
-                <select id="type">
-                    <option value="income">💰 Money Received</option>
-                    <option value="family">👨‍👩‍👧‍👦 Family</option>
-                    <option value="food">🍽️ Food</option>
-                    <option value="travel">🚂 Travel</option>
-                    <option value="medical">🏥 Medical</option>
-                    <option value="other">📦 Other</option>
-                </select>
-            </div>
+            <input type="number" id="amount" placeholder="Enter amount">
+            <select id="type">
+                <option value="income">💰 Money Received</option>
+                <option value="family">👨‍👩‍👧‍👦 Family</option>
+                <option value="food">🍽️ Food</option>
+                <option value="travel">🚂 Travel</option>
+                <option value="other">📦 Other</option>
+            </select>
             <button onclick="addTransaction()">Add Transaction</button>
         </div>
 
-        <div class="section">
+        <div class="card">
             <h3>📅 Daily Expenses</h3>
-            <div class="daily-grid">
-                <div class="day-box">
-                    <div class="day-name">Monday</div>
-                    <input type="number" class="day-input" placeholder="Travel" id="mon-travel" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Food" id="mon-food" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Other" id="mon-other" oninput="updateDaily()">
-                    <div class="day-total" id="mon-total">₹0</div>
-                </div>
-                <div class="day-box">
-                    <div class="day-name">Tuesday</div>
-                    <input type="number" class="day-input" placeholder="Travel" id="tue-travel" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Food" id="tue-food" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Other" id="tue-other" oninput="updateDaily()">
-                    <div class="day-total" id="tue-total">₹0</div>
-                </div>
-                <div class="day-box">
-                    <div class="day-name">Wednesday</div>
-                    <input type="number" class="day-input" placeholder="Travel" id="wed-travel" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Food" id="wed-food" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Other" id="wed-other" oninput="updateDaily()">
-                    <div class="day-total" id="wed-total">₹0</div>
-                </div>
-                <div class="day-box">
-                    <div class="day-name">Thursday</div>
-                    <input type="number" class="day-input" placeholder="Travel" id="thu-travel" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Food" id="thu-food" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Other" id="thu-other" oninput="updateDaily()">
-                    <div class="day-total" id="thu-total">₹0</div>
-                </div>
-                <div class="day-box">
-                    <div class="day-name">Friday</div>
-                    <input type="number" class="day-input" placeholder="Travel" id="fri-travel" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Food" id="fri-food" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Other" id="fri-other" oninput="updateDaily()">
-                    <div class="day-total" id="fri-total">₹0</div>
-                </div>
-                <div class="day-box">
-                    <div class="day-name">Saturday</div>
-                    <input type="number" class="day-input" placeholder="Travel" id="sat-travel" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Food" id="sat-food" oninput="updateDaily()">
-                    <input type="number" class="day-input" placeholder="Other" id="sat-other" oninput="updateDaily()">
-                    <div class="day-total" id="sat-total">₹0</div>
-                </div>
+            <div class="day-box">
+                <div class="day-name">Today</div>
+                <input type="number" class="day-input" placeholder="Travel" id="travel" onchange="updateTotal()">
+                <input type="number" class="day-input" placeholder="Food" id="food" onchange="updateTotal()">
+                <input type="number" class="day-input" placeholder="Other" id="other" onchange="updateTotal()">
+                <div class="day-total" id="total">₹0</div>
             </div>
         </div>
 
-        <div class="section">
+        <div class="card">
             <h3>📋 Recent Transactions</h3>
-            <div class="expense-list" id="transactionList">
-                <div style="text-align: center; color: #999; padding: 20px;">No transactions yet</div>
-            </div>
+            <div id="transactions">No transactions yet</div>
         </div>
 
-        <div id="alerts"></div>
-
-        <div class="button-row">
-            <button onclick="payEMI()">📱 Pay EMI</button>
-            <button onclick="resetData()">🔄 Reset</button>
-        </div>
-
-        <div class="small-text">
-            💾 <strong>Auto-saves in your browser</strong><br>
-            Add to home screen for app experience!
-        </div>
+        <button onclick="resetData()">🔄 Reset All</button>
     </div>
 
     <script>
-        let currentBalance = 1996.70;
+        let balance = 1997;
         let transactions = [];
 
-        // Load data on start
-        function loadData() {
-            const saved = localStorage.getItem('financeData');
-            if (saved) {
-                const data = JSON.parse(saved);
-                currentBalance = data.balance || 1996.70;
-                transactions = data.transactions || [];
-                updateDisplay();
-            }
-        }
-
-        // Save data
-        function saveData() {
-            const data = {
-                balance: currentBalance,
-                transactions: transactions,
-                date: new Date().toISOString()
-            };
-            localStorage.setItem('financeData', JSON.stringify(data));
-        }
-
-        // Add transaction
         function addTransaction() {
             const amount = parseFloat(document.getElementById('amount').value);
             const type = document.getElementById('type').value;
-
+            
             if (!amount || amount <= 0) {
-                showAlert('Please enter valid amount!', 'warning');
+                alert('Please enter valid amount!');
                 return;
             }
 
-            const transaction = {
-                id: Date.now(),
-                amount: amount,
-                type: type,
-                date: new Date().toLocaleDateString(),
-                time: new Date().toLocaleTimeString()
-            };
-
             if (type === 'income') {
-                currentBalance += amount;
+                balance += amount;
             } else {
-                currentBalance -= amount;
+                balance -= amount;
             }
 
-            transactions.unshift(transaction);
-            if (transactions.length > 10) transactions.pop();
+            transactions.unshift({
+                amount: amount,
+                type: type,
+                date: new Date().toLocaleDateString()
+            });
 
             document.getElementById('amount').value = '';
             updateDisplay();
-            saveData();
-            showAlert('Transaction added!', 'success');
         }
 
-        // Update daily expenses
-        function updateDaily() {
-            const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-            let totalDaily = 0;
-
-            days.forEach(day => {
-                const travel = parseFloat(document.getElementById(day + '-travel').value) || 0;
-                const food = parseFloat(document.getElementById(day + '-food').value) || 0;
-                const total = travel + food;
-                
-                document.getElementById(day + '-total').textContent = '₹' + total;
-                totalDaily += total;
-            });
-
-            updateDisplay();
-            saveData();
+        function updateTotal() {
+            const travel = parseFloat(document.getElementById('travel').value) || 0;
+            const food = parseFloat(document.getElementById('food').value) || 0;
+            const other = parseFloat(document.getElementById('other').value) || 0;
+            const total = travel + food + other;
+            
+            document.getElementById('total').textContent = '₹' + total;
         }
 
-        // Pay EMI
-        function payEMI() {
-            if (confirm('Pay Phone EMI of ₹6,000?')) {
-                currentBalance -= 6000;
-                transactions.unshift({
-                    id: Date.now(),
-                    amount: 6000,
-                    type: 'emi',
-                    date: new Date().toLocaleDateString(),
-                    time: new Date().toLocaleTimeString()
-                });
-                updateDisplay();
-                saveData();
-                showAlert('EMI paid successfully!', 'success');
-            }
-        }
-
-        // Update display
         function updateDisplay() {
-            document.getElementById('balance').textContent = '₹' + currentBalance.toLocaleString();
+            document.getElementById('balance').textContent = '₹' + balance;
             
-            // Calculate daily budget
-            const daysLeft = 5;
-            const dailyBudget = Math.max(0, currentBalance / daysLeft);
-            document.getElementById('dailyBudget').textContent = '₹' + Math.round(dailyBudget);
-
-            // Update total spent
-            const spent = transactions.filter(t => t.type !== 'income').reduce((sum, t) => sum + t.amount, 0);
-            document.getElementById('totalSpent').textContent = '₹' + spent.toLocaleString();
-
-            // Update transaction list
-            updateTransactionList();
-
-            // Show alerts
-            updateAlerts();
-        }
-
-        // Update transaction list
-        function updateTransactionList() {
-            const list = document.getElementById('transactionList');
-            
+            const transDiv = document.getElementById('transactions');
             if (transactions.length === 0) {
-                list.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">No transactions yet</div>';
-                return;
-            }
-
-            let html = '';
-            transactions.slice(0, 5).forEach(t => {
-                const icon = t.type === 'income' ? '💰' : 
-                           t.type === 'family' ? '👨‍👩‍👧‍👦' :
-                           t.type === 'food' ? '🍽️' :
-                           t.type === 'travel' ? '🚂' :
-                           t.type === 'medical' ? '🏥' :
-                           t.type === 'emi' ? '📱' : '📦';
-                
-                const sign = t.type === 'income' ? '+' : '-';
-                const color = t.type === 'income' ? '#27ae60' : '#e74c3c';
-
-                html += `
-                    <div class="expense-item">
-                        <div>
-                            ${icon} <strong style="color: ${color};">${sign}₹${t.amount}</strong>
-                            <small style="color: #666; display: block;">${t.date}</small>
-                        </div>
-                        <button onclick="removeTransaction(${t.id})" style="background: #e74c3c; color: white; border: none; padding: 3px 8px; border-radius: 3px; font-size: 12px;">×</button>
-                    </div>
-                `;
-            });
-            
-            list.innerHTML = html;
-        }
-
-        // Remove transaction
-        function removeTransaction(id) {
-            const transaction = transactions.find(t => t.id === id);
-            if (transaction) {
-                if (transaction.type === 'income') {
-                    currentBalance -= transaction.amount;
-                } else {
-                    currentBalance += transaction.amount;
-                }
-                transactions = transactions.filter(t => t.id !== id);
-                updateDisplay();
-                saveData();
-                showAlert('Transaction removed!', 'success');
-            }
-        }
-
-        // Show alerts
-        function updateAlerts() {
-            const alerts = document.getElementById('alerts');
-            let alertHtml = '';
-
-            if (currentBalance < 0) {
-                alertHtml = '<div class="alert alert-danger">⚠️ NEGATIVE BALANCE! You need money immediately!</div>';
-            } else if (currentBalance < 500) {
-                alertHtml = '<div class="alert alert-warning">⚠️ LOW BALANCE! Only ₹' + currentBalance.toFixed(0) + ' remaining</div>';
-            } else if (currentBalance > 5000) {
-                alertHtml = '<div class="alert alert-success">✅ Good! You have ₹' + currentBalance.toFixed(0) + ' available</div>';
-            }
-
-            alerts.innerHTML = alertHtml;
-        }
-
-        // Show notification
-        function showAlert(message, type) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-' + type;
-            alertDiv.textContent = message;
-            alertDiv.style.position = 'fixed';
-            alertDiv.style.top = '20px';
-            alertDiv.style.left = '50%';
-            alertDiv.style.transform = 'translateX(-50%)';
-            alertDiv.style.zIndex = '1000';
-            
-            document.body.appendChild(alertDiv);
-            setTimeout(() => alertDiv.remove(), 3000);
-        }
-
-        // Reset data
-        function resetData() {
-            if (confirm('Reset all data? This cannot be undone!')) {
-                currentBalance = 1996.70;
-                transactions = [];
-                localStorage.removeItem('financeData');
-                
-                // Clear daily inputs
-                const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-                days.forEach(day => {
-                    document.getElementById(day + '-travel').value = '';
-                    document.getElementById(day + '-food').value = '';
-                    document.getElementById(day + '-total').textContent = '₹0';
+                transDiv.innerHTML = 'No transactions yet';
+            } else {
+                let html = '';
+                transactions.slice(0, 3).forEach(t => {
+                    const sign = t.type === 'income' ? '+' : '-';
+                    const color = t.type === 'income' ? 'green' : 'red';
+                    html += `<div style="padding: 5px; border-bottom: 1px solid #eee;">
+                        <span style="color: ${color}; font-weight: bold;">${sign}₹${t.amount}</span>
+                        <small style="color: #666; float: right;">${t.date}</small>
+                    </div>`;
                 });
-                
+                transDiv.innerHTML = html;
+            }
+        }
+
+        function resetData() {
+            if (confirm('Reset all data?')) {
+                balance = 1997;
+                transactions = [];
+                document.getElementById('travel').value = '';
+                document.getElementById('food').value = '';
+                document.getElementById('other').value = '';
                 updateDisplay();
-                showAlert('All data reset!', 'success');
+                updateTotal();
             }
         }
 
         // Initialize
-        window.onload = function() {
-            loadData();
-            updateDisplay();
-        };
+        updateDisplay();
     </script>
 </body>
 </html>
